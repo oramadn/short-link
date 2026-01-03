@@ -1,11 +1,9 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  long_url: MyText
-  long_url_hash: MyString
-  short_code: MyString
+  long_url: "http://example.com/one"
+  long_url_hash: <%= Digest::SHA256.hexdigest("http://example.com/one") %>
 
 two:
-  long_url: MyText
-  long_url_hash: MyString
-  short_code: MyString
+  long_url: "http://example.com/two"
+  long_url_hash: <%= Digest::SHA256.hexdigest("http://example.com/two") %>

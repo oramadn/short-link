@@ -18,7 +18,7 @@ class Base62Converter
 
   def self.decode(string)
     number = 0
-    string.reverse_each_char.with_index do |char, index|
+    string.reverse.each_char.with_index do |char, index|
       value = DECODE_MAP[char]
       raise ArgumentError, "Invalid character #{char}" if value.nil?
 
