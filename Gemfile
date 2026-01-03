@@ -43,7 +43,7 @@ gem "thruster", require: false
 # gem "image_processing", "~> 1.2"
 gem "dotenv-rails"
 gem "redis", "~> 5.4.1"
-gem "connection_pool", "< 3"
+gem "connection_pool", "< 4"
 gem "sidekiq"
 
 group :development, :test do
