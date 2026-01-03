@@ -24,6 +24,16 @@ services:
       ports:
         - "6337:6379"
 
+  sidekiq:
+    build: .
+    command: bundle exec sidekiq
+    env_file: .env
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - .:/rails
+
 volumes:
   postgres_data:
   redis_data:
