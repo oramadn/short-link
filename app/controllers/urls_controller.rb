@@ -8,10 +8,14 @@ class UrlsController < ApplicationController
     @url = Url.find_by(long_url_hash: url_hash)
 
     if @url.nil?
-      @url = Url.create(long_url: long_url)
+      begin
+        @url = Url.create!(long_url: long_url)
+      rescue ActiveRecord::RecordNotUnique
+        @url = Url.find_by!(long_url_hash: url_hash)
+      end
     end
 
-    Rails.cache.write("url_code:#{@url.short_code}", @url.long_url, expires_in: 24.hours)
+    CacheUrlJob.perform_later(@url.short_code, @url.long_url)
 
     render json: {
       short_url: "#{request.base_url}/#{@url.short_code}",
@@ -31,7 +35,7 @@ class UrlsController < ApplicationController
     @url = Url.find_by(short_code: short_code)
 
     if @url
-      Rails.cache.write("url_code:#{short_code}", @url.long_url, expires_in: 24.hours)
+      CacheUrlJob.perform_later(short_code, @url.long_url)
       render json: { long_url: @url.long_url }, status: :ok
     else
       render json: { error: "Short code not found" }, status: :not_found
