@@ -31,9 +31,10 @@
         <div id="encodePanel">
           <div class="flex flex-col gap-4">
             <div class="relative">
-              <input type="url" id="urlInput" 
-                     placeholder="Paste your long link here..." 
+              <input type="text" id="urlInput" 
+                     placeholder="Enter URL (e.g., facebook.com or https://facebook.com)" 
                      class="w-full bg-black/40 border border-white/5 rounded-2xl px-6 py-5 text-white placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all text-lg">
+              <div id="urlError" class="hidden mt-2 text-red-400 text-sm px-2"></div>
             </div>
 
             <button onclick="shortenUrl()" id="encodeBtn"
@@ -53,6 +54,7 @@
           </div>
         </div>
 
+        <!-- Decode Panel -->
         <div id="decodePanel" class="hidden">
           <div class="flex flex-col gap-4">
             <div class="relative">
@@ -105,13 +107,32 @@
       }
     }
 
+    function basicUrlValidation(input) {
+      const trimmed = input.trim();
+      if (!trimmed) return false;
+      if (!trimmed.includes('.')) return false;
+      if (/\s/.test(trimmed)) return false;
+
+      return true;
+    }
+
     async function shortenUrl() {
       const btn = document.getElementById('encodeBtn');
       const input = document.getElementById('urlInput');
       const resultArea = document.getElementById('encodeResult');
       const output = document.getElementById('shortUrlOutput');
+      const errorDiv = document.getElementById('urlError');
 
-      if (!input.value) return;
+      errorDiv.classList.add('hidden');
+      errorDiv.textContent = '';
+      input.classList.remove('border-red-500');
+
+      if (!basicUrlValidation(input.value)) {
+        errorDiv.textContent = 'Please enter a valid URL';
+        errorDiv.classList.remove('hidden');
+        input.classList.add('border-red-500');
+        return;
+      }
 
       btn.innerText = 'Processing...';
       btn.disabled = true;
@@ -120,7 +141,7 @@
         const response = await fetch('/api/v1/encode', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ url: input.value })
+          body: JSON.stringify({ url: input.value.trim() })
         });
 
         const data = await response.json();
@@ -129,11 +150,16 @@
           output.innerText = data.short_url;
           resultArea.classList.remove('hidden');
           input.value = '';
+          input.classList.remove('border-red-500');
         } else {
-          alert(data.error || 'Something went wrong');
+          errorDiv.textContent = data.error || 'Something went wrong';
+          errorDiv.classList.remove('hidden');
+          input.classList.add('border-red-500');
         }
       } catch (err) {
-        alert('Failed to connect to API');
+        errorDiv.textContent = 'Failed to connect to API';
+        errorDiv.classList.remove('hidden');
+        input.classList.add('border-red-500');
       } finally {
         btn.innerText = 'Shorten URL';
         btn.disabled = false;
