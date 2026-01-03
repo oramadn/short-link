@@ -54,7 +54,6 @@
           </div>
         </div>
 
-        <!-- Decode Panel -->
         <div id="decodePanel" class="hidden">
           <div class="flex flex-col gap-4">
             <div class="relative">
@@ -109,8 +108,11 @@
 
     function basicUrlValidation(input) {
       const trimmed = input.trim();
+
       if (!trimmed) return false;
+
       if (!trimmed.includes('.')) return false;
+
       if (/\s/.test(trimmed)) return false;
 
       return true;
@@ -126,6 +128,7 @@
       errorDiv.classList.add('hidden');
       errorDiv.textContent = '';
       input.classList.remove('border-red-500');
+      resultArea.classList.add('hidden');
 
       if (!basicUrlValidation(input.value)) {
         errorDiv.textContent = 'Please enter a valid URL';
@@ -152,12 +155,21 @@
           input.value = '';
           input.classList.remove('border-red-500');
         } else {
-          errorDiv.textContent = data.error || 'Something went wrong';
+          let errorMessage = data.error || 'Something went wrong';
+
+          if (errorMessage.includes('Long url hash has already been taken')) {
+            errorMessage = 'This URL has already been shortened';
+          } else if (errorMessage.includes('Validation failed')) {
+            errorMessage = errorMessage.replace('Validation failed: ', '');
+          }
+
+          errorDiv.textContent = errorMessage;
           errorDiv.classList.remove('hidden');
           input.classList.add('border-red-500');
         }
       } catch (err) {
-        errorDiv.textContent = 'Failed to connect to API';
+        console.error('API Error:', err);
+        errorDiv.textContent = 'Failed to connect to the server. Please try again.';
         errorDiv.classList.remove('hidden');
         input.classList.add('border-red-500');
       } finally {
