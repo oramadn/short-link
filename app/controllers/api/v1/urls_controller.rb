@@ -1,4 +1,4 @@
-class UrlsController < ApplicationController
+class Api::V1::UrlsController < ApplicationController
   def encode
     long_url = params[:url]
     return render json: { error: "URL is required" }, status: :bad_request if long_url.blank?

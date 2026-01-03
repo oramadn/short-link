@@ -1,6 +1,10 @@
 Rails.application.routes.draw do
-  get "up" => "rails/health#show", as: :rails_health_check
+  root "pages#home"
 
-  post "/encode", to: "urls#encode"
-  get "/decode/:short_code", to: "urls#decode"
+  namespace :api do
+    namespace :v1 do
+      post "/encode", to: "urls#encode"
+      get "/decode/:short_code", to: "urls#decode"
+    end
+  end
 end
