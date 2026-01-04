@@ -17,6 +17,7 @@ cd short-link
 ```bash
 docker-compose up --build
 ```
+Note: .env file is included in the repo for easier setup
 
 3. In a new terminal, set up the database:
 ```bash
