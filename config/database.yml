@@ -4,6 +4,9 @@ default: &default
   url: <%= ENV.fetch("DATABASE_URL") { nil } %>
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
+production:
+  <<: *default
+
 development:
   <<: *default
   database: url_shortener_development
