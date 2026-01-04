@@ -6,7 +6,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-
+      
   web:
     build: .
     env_file: .env
@@ -16,17 +16,26 @@ services:
       - db
     volumes:
       - .:/rails
-    command: ./bin/dev
-
+    command: bin/rails server -p 3000 -b 0.0.0.0
+    
+  css:
+    build: .
+    env_file: .env
+    volumes:
+      - .:/rails
+    command: bin/rails tailwindcss:watch
+    tty: true
+    stdin_open: true
+    
   redis:
-      image: redis:7-alpine
-      restart: always
-      volumes:
-        - redis_data:/data
-      ports:
-        - "6337:6379"
-      command: redis-server --appendonly yes
-
+    image: redis:7-alpine
+    restart: always
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6337:6379"
+    command: redis-server --appendonly yes
+      
   sidekiq:
     build: .
     command: bundle exec sidekiq

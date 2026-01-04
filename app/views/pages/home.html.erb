@@ -1,309 +1,298 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <title>ShortLink - URL Shortener</title>
-</head>
-<body>
-  <div class="min-h-screen bg-neutral-950 flex items-center justify-center p-4 font-sans selection:bg-blue-500/30">
-    <div class="max-w-xl w-full">
-      <div class="text-center mb-10">
-        <h1 class="text-5xl font-black text-white tracking-tighter mb-3 italic">
-          ShortLink<span class="text-blue-500">.</span>
-        </h1>
-        <p class="text-neutral-400 text-lg">Fast and permanent URL shortening.</p>
+<div class="min-h-screen bg-neutral-950 flex items-center justify-center p-4 font-sans selection:bg-blue-500/30">
+  <div class="max-w-xl w-full">
+    <div class="text-center mb-10">
+      <h1 class="text-5xl font-black text-white tracking-tighter mb-3 italic">
+        ShortLink<span class="text-blue-500">.</span>
+      </h1>
+      <p class="text-neutral-400 text-lg">Fast and permanent URL shortening.</p>
+    </div>
+
+    <div class="bg-neutral-900/50 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl">
+      <div class="flex gap-2 mb-6 bg-black/40 p-1 rounded-2xl">
+        <button onclick="switchTab('encode')" id="encodeTab"
+                class="flex-1 py-3 rounded-xl font-semibold transition-all text-white bg-blue-600 hover:cursor-pointer">
+          Shorten URL
+        </button>
+        <button onclick="switchTab('decode')" id="decodeTab"
+                class="flex-1 py-3 rounded-xl font-semibold transition-all text-neutral-400 hover:text-white hover:cursor-pointer">
+          Expand URL
+        </button>
       </div>
 
-      <div class="bg-neutral-900/50 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl">
-        <div class="flex gap-2 mb-6 bg-black/40 p-1 rounded-2xl">
-          <button onclick="switchTab('encode')" id="encodeTab"
-                  class="flex-1 py-3 rounded-xl font-semibold transition-all text-white bg-blue-600">
+      <div id="encodePanel">
+        <div class="flex flex-col gap-4">
+          <div class="relative">
+            <input type="text" id="urlInput" 
+                   placeholder="Enter URL (e.g., facebook.com or https://facebook.com)" 
+                   class="w-full bg-black/40 border border-white/5 rounded-2xl px-6 py-5 text-white placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all text-lg">
+            <div id="urlError" class="hidden mt-2 text-red-400 text-sm px-2"></div>
+          </div>
+
+          <button onclick="shortenUrl()" id="encodeBtn"
+                  class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-5 rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-blue-500/20 text-lg hover:cursor-pointer">
             Shorten URL
           </button>
-          <button onclick="switchTab('decode')" id="decodeTab"
-                  class="flex-1 py-3 rounded-xl font-semibold transition-all text-neutral-400 hover:text-white">
+        </div>
+
+        <div id="encodeResult" class="mt-10 pt-8 border-t border-white/5 hidden">
+          <p class="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-3">Generated Link</p>
+          <div class="flex items-center gap-3 bg-white/5 rounded-2xl p-2 pl-6 border border-white/5">
+            <span id="shortUrlOutput" class="text-blue-400 font-mono text-lg truncate flex-1"></span>
+            <button onclick="copyShortUrl()" id="copyShortBtn" class="ml-auto bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-xl font-semibold transition-colors whitespace-nowrap hover:cursor-pointer">
+              Copy
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="decodePanel" class="hidden">
+        <div class="flex flex-col gap-4">
+          <div class="relative">
+            <input type="text" id="shortCodeInput" 
+                   placeholder="Paste short code or full short URL..." 
+                   class="w-full bg-black/40 border border-white/5 rounded-2xl px-6 py-5 text-white placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all text-lg">
+          </div>
+
+          <button onclick="expandUrl()" id="decodeBtn"
+                  class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-5 rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-blue-500/20 text-lg hover:cursor-pointer">
             Expand URL
           </button>
         </div>
 
-        <div id="encodePanel">
-          <div class="flex flex-col gap-4">
-            <div class="relative">
-              <input type="text" id="urlInput" 
-                     placeholder="Enter URL (e.g., facebook.com or https://facebook.com)" 
-                     class="w-full bg-black/40 border border-white/5 rounded-2xl px-6 py-5 text-white placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all text-lg">
-              <div id="urlError" class="hidden mt-2 text-red-400 text-sm px-2"></div>
-            </div>
-
-            <button onclick="shortenUrl()" id="encodeBtn"
-                    class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-5 rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-blue-500/20 text-lg">
-              Shorten URL
+        <div id="decodeResult" class="mt-10 pt-8 border-t border-white/5 hidden">
+          <p class="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-3">Original Link</p>
+          <div class="flex items-center gap-3 bg-white/5 rounded-2xl p-2 pl-6 border border-white/5">
+            <span id="longUrlOutput" class="text-green-400 font-mono text-lg truncate flex-1"></span>
+            <button onclick="copyLongUrl()" id="copyLongBtn" class="ml-auto bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-xl font-semibold transition-colors whitespace-nowrap hover:cursor-pointer">
+              Copy
             </button>
-          </div>
-
-          <div id="encodeResult" class="mt-10 pt-8 border-t border-white/5 hidden">
-            <p class="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-3">Generated Link</p>
-            <div class="flex items-center gap-3 bg-white/5 rounded-2xl p-2 pl-6 border border-white/5">
-              <span id="shortUrlOutput" class="text-blue-400 font-mono text-lg truncate flex-1"></span>
-              <button onclick="copyShortUrl()" id="copyShortBtn" class="ml-auto bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-xl font-semibold transition-colors whitespace-nowrap">
-                Copy
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div id="decodePanel" class="hidden">
-          <div class="flex flex-col gap-4">
-            <div class="relative">
-              <input type="text" id="shortCodeInput" 
-                     placeholder="Paste short code or full short URL..." 
-                     class="w-full bg-black/40 border border-white/5 rounded-2xl px-6 py-5 text-white placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all text-lg">
-            </div>
-
-            <button onclick="expandUrl()" id="decodeBtn"
-                    class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-5 rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-blue-500/20 text-lg">
-              Expand URL
-            </button>
-          </div>
-
-          <div id="decodeResult" class="mt-10 pt-8 border-t border-white/5 hidden">
-            <p class="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-3">Original Link</p>
-            <div class="flex items-center gap-3 bg-white/5 rounded-2xl p-2 pl-6 border border-white/5">
-              <span id="longUrlOutput" class="text-green-400 font-mono text-lg truncate flex-1"></span>
-              <button onclick="copyLongUrl()" id="copyLongBtn" class="ml-auto bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-xl font-semibold transition-colors whitespace-nowrap">
-                Copy
-              </button>
-            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <script>
-    function switchTab(tab) {
-      const encodePanel = document.getElementById('encodePanel');
-      const decodePanel = document.getElementById('decodePanel');
-      const encodeTab = document.getElementById('encodeTab');
-      const decodeTab = document.getElementById('decodeTab');
+<script>
+  function switchTab(tab) {
+    const encodePanel = document.getElementById('encodePanel');
+    const decodePanel = document.getElementById('decodePanel');
+    const encodeTab = document.getElementById('encodeTab');
+    const decodeTab = document.getElementById('decodeTab');
 
-      if (tab === 'encode') {
-        encodePanel.classList.remove('hidden');
-        decodePanel.classList.add('hidden');
-        encodeTab.classList.add('bg-blue-600', 'text-white');
-        encodeTab.classList.remove('text-neutral-400');
-        decodeTab.classList.remove('bg-blue-600', 'text-white');
-        decodeTab.classList.add('text-neutral-400');
+    if (tab === 'encode') {
+      encodePanel.classList.remove('hidden');
+      decodePanel.classList.add('hidden');
+      encodeTab.classList.add('bg-blue-600', 'text-white');
+      encodeTab.classList.remove('text-neutral-400');
+      decodeTab.classList.remove('bg-blue-600', 'text-white');
+      decodeTab.classList.add('text-neutral-400');
+    } else {
+      encodePanel.classList.add('hidden');
+      decodePanel.classList.remove('hidden');
+      decodeTab.classList.add('bg-blue-600', 'text-white');
+      decodeTab.classList.remove('text-neutral-400');
+      encodeTab.classList.remove('bg-blue-600', 'text-white');
+      encodeTab.classList.add('text-neutral-400');
+    }
+  }
+
+  function basicUrlValidation(input) {
+    const trimmed = input.trim();
+
+    if (!trimmed) return false;
+
+    if (!trimmed.includes('.')) return false;
+
+    if (/\s/.test(trimmed)) return false;
+
+    return true;
+  }
+
+  async function shortenUrl() {
+    const btn = document.getElementById('encodeBtn');
+    const input = document.getElementById('urlInput');
+    const resultArea = document.getElementById('encodeResult');
+    const output = document.getElementById('shortUrlOutput');
+    const errorDiv = document.getElementById('urlError');
+
+    errorDiv.classList.add('hidden');
+    errorDiv.textContent = '';
+    input.classList.remove('border-red-500');
+    resultArea.classList.add('hidden');
+
+    if (!basicUrlValidation(input.value)) {
+      errorDiv.textContent = 'Please enter a valid URL';
+      errorDiv.classList.remove('hidden');
+      input.classList.add('border-red-500');
+      return;
+    }
+
+    btn.innerText = 'Processing...';
+    btn.disabled = true;
+
+    try {
+      const response = await fetch('/api/v1/encode', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: input.value.trim() })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        output.innerText = data.short_url;
+        resultArea.classList.remove('hidden');
+        input.value = '';
+        input.classList.remove('border-red-500');
       } else {
-        encodePanel.classList.add('hidden');
-        decodePanel.classList.remove('hidden');
-        decodeTab.classList.add('bg-blue-600', 'text-white');
-        decodeTab.classList.remove('text-neutral-400');
-        encodeTab.classList.remove('bg-blue-600', 'text-white');
-        encodeTab.classList.add('text-neutral-400');
-      }
-    }
+        let errorMessage = data.error || 'Something went wrong';
 
-    function basicUrlValidation(input) {
-      const trimmed = input.trim();
+        if (errorMessage.includes('Long url hash has already been taken')) {
+          errorMessage = 'This URL has already been shortened';
+        } else if (errorMessage.includes('Validation failed')) {
+          errorMessage = errorMessage.replace('Validation failed: ', '');
+        }
 
-      if (!trimmed) return false;
-
-      if (!trimmed.includes('.')) return false;
-
-      if (/\s/.test(trimmed)) return false;
-
-      return true;
-    }
-
-    async function shortenUrl() {
-      const btn = document.getElementById('encodeBtn');
-      const input = document.getElementById('urlInput');
-      const resultArea = document.getElementById('encodeResult');
-      const output = document.getElementById('shortUrlOutput');
-      const errorDiv = document.getElementById('urlError');
-
-      errorDiv.classList.add('hidden');
-      errorDiv.textContent = '';
-      input.classList.remove('border-red-500');
-      resultArea.classList.add('hidden');
-
-      if (!basicUrlValidation(input.value)) {
-        errorDiv.textContent = 'Please enter a valid URL';
+        errorDiv.textContent = errorMessage;
         errorDiv.classList.remove('hidden');
         input.classList.add('border-red-500');
-        return;
       }
+    } catch (err) {
+      console.error('API Error:', err);
+      errorDiv.textContent = 'Failed to connect to the server. Please try again.';
+      errorDiv.classList.remove('hidden');
+      input.classList.add('border-red-500');
+    } finally {
+      btn.innerText = 'Shorten URL';
+      btn.disabled = false;
+    }
+  }
 
-      btn.innerText = 'Processing...';
-      btn.disabled = true;
+  async function expandUrl() {
+    const btn = document.getElementById('decodeBtn');
+    const input = document.getElementById('shortCodeInput');
+    const resultArea = document.getElementById('decodeResult');
+    const output = document.getElementById('longUrlOutput');
 
+    if (!input.value) return;
+
+    let shortCode = input.value.trim();
+
+    if (shortCode.startsWith('http://') || shortCode.startsWith('https://')) {
       try {
-        const response = await fetch('/api/v1/encode', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ url: input.value.trim() })
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-          output.innerText = data.short_url;
-          resultArea.classList.remove('hidden');
-          input.value = '';
-          input.classList.remove('border-red-500');
-        } else {
-          let errorMessage = data.error || 'Something went wrong';
-
-          if (errorMessage.includes('Long url hash has already been taken')) {
-            errorMessage = 'This URL has already been shortened';
-          } else if (errorMessage.includes('Validation failed')) {
-            errorMessage = errorMessage.replace('Validation failed: ', '');
-          }
-
-          errorDiv.textContent = errorMessage;
-          errorDiv.classList.remove('hidden');
-          input.classList.add('border-red-500');
-        }
-      } catch (err) {
-        console.error('API Error:', err);
-        errorDiv.textContent = 'Failed to connect to the server. Please try again.';
-        errorDiv.classList.remove('hidden');
-        input.classList.add('border-red-500');
-      } finally {
-        btn.innerText = 'Shorten URL';
-        btn.disabled = false;
-      }
-    }
-
-    async function expandUrl() {
-      const btn = document.getElementById('decodeBtn');
-      const input = document.getElementById('shortCodeInput');
-      const resultArea = document.getElementById('decodeResult');
-      const output = document.getElementById('longUrlOutput');
-
-      if (!input.value) return;
-
-      let shortCode = input.value.trim();
-
-      if (shortCode.startsWith('http://') || shortCode.startsWith('https://')) {
-        try {
-          const url = new URL(shortCode);
-          shortCode = url.pathname.split('/').filter(seg => seg).pop() || '';
-        } catch (e) {
-          shortCode = shortCode.split('/').filter(seg => seg).pop() || '';
-        }
-      } else if (shortCode.includes('/')) {
+        const url = new URL(shortCode);
+        shortCode = url.pathname.split('/').filter(seg => seg).pop() || '';
+      } catch (e) {
         shortCode = shortCode.split('/').filter(seg => seg).pop() || '';
       }
-
-      if (!shortCode) {
-        alert('Please enter a valid short code or URL');
-        return;
-      }
-
-      btn.innerText = 'Processing...';
-      btn.disabled = true;
-
-      try {
-        const response = await fetch(`/api/v1/decode/${shortCode}`, {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' }
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-          output.innerText = data.long_url;
-          resultArea.classList.remove('hidden');
-          input.value = '';
-        } else {
-          alert(data.error || 'Short code not found');
-        }
-      } catch (err) {
-        alert('Failed to connect to API');
-      } finally {
-        btn.innerText = 'Expand URL';
-        btn.disabled = false;
-      }
+    } else if (shortCode.includes('/')) {
+      shortCode = shortCode.split('/').filter(seg => seg).pop() || '';
     }
 
-    function copyShortUrl() {
-      const text = document.getElementById('shortUrlOutput').textContent;
-      const btn = document.getElementById('copyShortBtn');
-      const originalText = btn.textContent;
+    if (!shortCode) {
+      alert('Please enter a valid short code or URL');
+      return;
+    }
 
-      if (!text) return;
+    btn.innerText = 'Processing...';
+    btn.disabled = true;
 
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(() => {
-          btn.textContent = 'Copied!';
-          setTimeout(() => {
-            btn.textContent = originalText;
-          }, 2000);
-        }).catch(err => {
-          console.error('Copy failed:', err);
-          fallbackCopy(text, btn, originalText);
-        });
+    try {
+      const response = await fetch(`/api/v1/decode/${shortCode}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        output.innerText = data.long_url;
+        resultArea.classList.remove('hidden');
+        input.value = '';
       } else {
-        fallbackCopy(text, btn, originalText);
+        alert(data.error || 'Short code not found');
       }
+    } catch (err) {
+      alert('Failed to connect to API');
+    } finally {
+      btn.innerText = 'Expand URL';
+      btn.disabled = false;
     }
+  }
 
-    function copyLongUrl() {
-      const text = document.getElementById('longUrlOutput').textContent;
-      const btn = document.getElementById('copyLongBtn');
-      const originalText = btn.textContent;
+  function copyShortUrl() {
+    const text = document.getElementById('shortUrlOutput').textContent;
+    const btn = document.getElementById('copyShortBtn');
+    const originalText = btn.textContent;
 
-      if (!text) return;
+    if (!text) return;
 
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(() => {
-          btn.textContent = 'Copied!';
-          setTimeout(() => {
-            btn.textContent = originalText;
-          }, 2000);
-        }).catch(err => {
-          console.error('Copy failed:', err);
-          fallbackCopy(text, btn, originalText);
-        });
-      } else {
-        fallbackCopy(text, btn, originalText);
-      }
-    }
-
-    function fallbackCopy(text, btn, originalText) {
-      const textArea = document.createElement('textarea');
-      textArea.value = text;
-      textArea.style.position = 'fixed';
-      textArea.style.left = '-999999px';
-      textArea.style.top = '0';
-      document.body.appendChild(textArea);
-      textArea.focus();
-      textArea.select();
-
-      try {
-        const successful = document.execCommand('copy');
-        if (successful) {
-          btn.textContent = 'Copied!';
-        } else {
-          btn.textContent = 'Failed';
-        }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = 'Copied!';
         setTimeout(() => {
           btn.textContent = originalText;
         }, 2000);
-      } catch (err) {
-        console.error('Fallback copy failed:', err);
+      }).catch(err => {
+        console.error('Copy failed:', err);
+        fallbackCopy(text, btn, originalText);
+      });
+    } else {
+      fallbackCopy(text, btn, originalText);
+    }
+  }
+
+  function copyLongUrl() {
+    const text = document.getElementById('longUrlOutput').textContent;
+    const btn = document.getElementById('copyLongBtn');
+    const originalText = btn.textContent;
+
+    if (!text) return;
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = 'Copied!';
+        setTimeout(() => {
+          btn.textContent = originalText;
+        }, 2000);
+      }).catch(err => {
+        console.error('Copy failed:', err);
+        fallbackCopy(text, btn, originalText);
+      });
+    } else {
+      fallbackCopy(text, btn, originalText);
+    }
+  }
+
+  function fallbackCopy(text, btn, originalText) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '0';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+      const successful = document.execCommand('copy');
+      if (successful) {
+        btn.textContent = 'Copied!';
+      } else {
         btn.textContent = 'Failed';
-        setTimeout(() => {
-          btn.textContent = originalText;
-        }, 2000);
       }
-
-      document.body.removeChild(textArea);
+      setTimeout(() => {
+        btn.textContent = originalText;
+      }, 2000);
+    } catch (err) {
+      console.error('Fallback copy failed:', err);
+      btn.textContent = 'Failed';
+      setTimeout(() => {
+        btn.textContent = originalText;
+      }, 2000);
     }
-  </script>
-</body>
-</html>
+
+    document.body.removeChild(textArea);
+  }
+</script>
