@@ -64,6 +64,7 @@ docker-compose exec web bin/rails console
 ```
 Running tests:
 ```bash
+docker-compose exec web bin/rails db:test:prepare
 docker-compose exec web bin/rails test
 ```
 
