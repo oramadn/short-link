@@ -1,4 +1,5 @@
 # Setup Instructions
+Note: check URL_SHORTENER_FLOW.md for some information regarding the encode and decode flows
 
 ## Prerequisites
 
