@@ -12,19 +12,24 @@
 git clone https://github.com/oramadn/short-link.git
 cd short-link
 ```
+2. Install version 4.0.0 of ruby if not already present
+```bash
+rbenv install 4.0.0
+rbenv local 4.0.0
+```
 
-2. Build and start the containers:
+3. Build and start the containers:
 ```bash
 docker-compose up --build
 ```
 Note: .env file is included in the repo for easier setup
 
-3. In a new terminal, set up the database:
+4. In a new terminal, set up the database:
 ```bash
 docker-compose exec web bin/rails db:create db:migrate
 ```
 
-4. Access the application at `http://0.0.0.0:3000`
+5. Access the application at `http://0.0.0.0:3000`
 
 ## Services
 
