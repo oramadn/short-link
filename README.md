@@ -1,3 +1,71 @@
+# Setup Instructions
+
+## Prerequisites
+
+- Docker and Docker Compose installed
+- Git
+
+## Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/oramadn/short-link.git
+cd short-link
+```
+
+2. Build and start the containers:
+```bash
+docker-compose up --build
+```
+
+3. In a new terminal, set up the database:
+```bash
+docker-compose exec web bin/rails db:create db:migrate
+```
+
+4. Access the application at `http://0.0.0.0:3000`
+
+## Services
+
+The application runs the following services:
+
+- **Web**: Rails server on port 3000
+- **CSS**: Tailwind CSS watcher for live stylesheet compilation
+- **Database**: PostgreSQL on port 5432
+- **Redis**: Redis server on port 6337
+- **Sidekiq**: Background job processor
+
+## Common Commands
+
+Stop all services:
+```bash
+docker-compose down
+```
+
+View logs:
+```bash
+docker-compose logs -f
+```
+
+Run Rails commands:
+```bash
+docker-compose exec web bin/rails <command>
+```
+
+Access Rails console:
+```bash
+docker-compose exec web bin/rails console
+```
+Running tests:
+```bash
+docker-compose exec web bin/rails test
+```
+
+## Troubleshooting
+
+If you see "watchman not found" warnings in the CSS service logs, this is expected and can be safely ignored. The CSS watcher will function correctly using an alternative file watcher.
+
+# Design breakdown
 ## Design Decisions
 
 ### When a user attempts to shorten a URL that was already shortened, how can we quickly look it up?
