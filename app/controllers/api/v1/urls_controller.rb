@@ -1,4 +1,7 @@
 class Api::V1::UrlsController < ApplicationController
+  # Creates a shortened URL from a long URL.
+  # @param [String] url the URL to shorten
+  # @return [JSON] a JSON object with the short URL
   def encode
     long_url = params[:url]
     return render json: { error: "URL is required" }, status: :bad_request if long_url.blank?
@@ -17,6 +20,9 @@ class Api::V1::UrlsController < ApplicationController
     render json: { error: "An error occurred" }, status: :internal_server_error
   end
 
+  # Retrieves the long URL for a given short code.
+  # @param [String] short_code the short code to look up
+  # @return [JSON] a JSON object with the long URL
   def decode
     short_code = params[:short_code]
     long_url = Url.find_long_url(short_code)
